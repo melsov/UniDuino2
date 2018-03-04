@@ -49,17 +49,14 @@ public class BNOClient : MonoBehaviour
     }
 
     protected virtual void handleBNOData(BNOData bNOData) {
-        rb.MoveRotation(isolateAxisRotation(bNOData.quat, Vector3.up, Vector3.right, .2f));
+        rb.MoveRotation(isolateAxisRotation(bNOData.quat, Vector3.up)); // Vector3.right, .2f));
     }
 
-    private Quaternion isolateAxisRotation(Quaternion qin, Vector3 referenceAxis, Vector3 secondaryAxis, float secondaryInfluence = 1f, float sensitivity = 1f) {
-        return isolateAxisRotation(qin, (referenceAxis + secondaryAxis * secondaryInfluence), sensitivity);
-    }
-
-    private Quaternion isolateAxisRotation(Quaternion qin, Vector3 referenceAxis, float sensitivity = 1f) {
+    protected Quaternion isolateAxisRotation(Quaternion qin, Vector3 referenceAxis, float sensitivity = 1f) {
         Vector3 axis; float degrees;
         qin.ToAngleAxis(out degrees, out axis);
-        Quaternion up = Quaternion.AngleAxis(0f, referenceAxis);
-        return Quaternion.AngleAxis(Vector3.Dot(axis, referenceAxis) * degrees * sensitivity, referenceAxis); 
+        float dot = Vector3.Dot(axis, referenceAxis);
+        print(string.Format("{0} | dot: {1}", axis.ToString(), dot));
+        return Quaternion.AngleAxis(dot * dot * Mathf.Sign(dot) * degrees * sensitivity, referenceAxis); 
     }
 }
